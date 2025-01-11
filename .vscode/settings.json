@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Ecommerce",
+            "database": "${workspaceFolder:Ecommerce}/db.sqlite3"
+        }
+    ]
+}

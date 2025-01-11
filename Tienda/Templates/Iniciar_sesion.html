@@ -1,0 +1,52 @@
+{% extends "Base.html" %}
+{% block Estructura %}
+<div class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
+        <form action="/login" method="POST" class="space-y-4">
+            {% csrf_token %}
+            <!-- Gmail -->
+            <div>
+                <label for="gmail" class="block text-sm font-medium text-gray-700">Gmail</label>
+                <input
+                    type="email"
+                    id="gmail"
+                    name="gmail"
+                    required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="correo@gmail.com"
+                />
+            </div>
+
+            <!-- Contraseña -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="********"
+                />
+            </div>
+
+            <!-- Botón de Inicio de Sesión -->
+            <div>
+                <button
+                    type="submit"
+                    class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    Iniciar Sesión
+                </button>
+            </div>
+        </form>
+
+        <!-- Enlace de Recuperar Contraseña -->
+        <p class="mt-4 text-sm text-center text-gray-600">
+            ¿Olvidaste tu contraseña? 
+            <a href="/recuperar" class="text-blue-500 hover:underline">Recupérala aquí</a>.
+        </p>
+    </div>
+</div>
+{% endblock Estructura %}
