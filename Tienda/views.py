@@ -1,12 +1,13 @@
-
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Comprador
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import login, logout
+from django.contrib.sessions.models import Session
+from django.utils.timezone import now
+from .models import Comprador
+from django.shortcuts import render
+from Ecommerce.utils import validar_sesion
 
-def Productos(request):
-    return render(request, 'Productos.html', {})
 
 def Iniciar_Sesion(request):
     if request.method == "POST":
@@ -21,14 +22,41 @@ def Iniciar_Sesion(request):
         
         # Comparar la contraseña ingresada con la almacenada
         if check_password(password, user.contraseña):
-            # Iniciar sesión: guarda datos en la sesión
+            # Iniciar sesión usando la sesión de Django
             request.session['user_id'] = user.id
+            request.session['user_email'] = user.gmail
+            request.session['last_login'] = now().isoformat()  # Guarda la fecha/hora del login
             messages.success(request, f"Bienvenido, {user.usuario}!")
             return redirect('Productos')  # Redirige a la página deseada
         else:
             messages.error(request, "Contraseña incorrecta.")
-
+            return render(request, 'Iniciar_sesion.html')
     return render(request, 'Iniciar_sesion.html')
+
+@validar_sesion
+def Cerrar_Sesion(request):
+    if 'user_id' in request.session:
+        del request.session['user_id']
+        del request.session['user_email']
+        del request.session['last_login']
+        messages.success(request, "Sesión cerrada correctamente.")
+    else:
+        messages.warning(request, "No estás logueado.")
+    return redirect('Login')  # Redirige al login
+
+@validar_sesion
+def Productos(request):
+    return render(request, 'Productos.html', {})
+
+def Inicio(request):
+    return render(request, 'Inicio.html', {})
+
+def Nosotros(request):
+    return render(request, 'Nosotros.html', {})
+
+@validar_sesion
+def Contacto(request):
+    return render(request, 'contacto.html', {})
 
 def Register(request):
     if request.method == "POST":

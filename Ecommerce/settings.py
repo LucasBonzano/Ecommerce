@@ -123,3 +123,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Define el tiempo de inactividad máximo en segundos
+SESSION_COOKIE_AGE = 300  # 5 minutos
+
+# Cierra la sesión al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Renueva la sesión solo si se detecta actividad
+SESSION_SAVE_EVERY_REQUEST = True
