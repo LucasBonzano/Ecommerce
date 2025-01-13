@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Tienda',
-    'Administrador'
+    'Administrador',
+    'argon2'
 ]
 
 MIDDLEWARE = [
@@ -119,6 +120,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Carpeta donde se ubican los archivos estáticos del proyecto
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "Tienda\static"
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -132,3 +139,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Renueva la sesión solo si se detecta actividad
 SESSION_SAVE_EVERY_REQUEST = True
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',  # Algoritmo Argon2
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # PBKDF2 con SHA-256
+]

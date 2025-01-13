@@ -4,9 +4,10 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login, logout
 from django.contrib.sessions.models import Session
 from django.utils.timezone import now
-from .models import Comprador
+from .models import Comprador, Perfumes
 from django.shortcuts import render
 from Ecommerce.utils import validar_sesion
+
 
 
 def Iniciar_Sesion(request):
@@ -44,20 +45,6 @@ def Cerrar_Sesion(request):
         messages.warning(request, "No estás logueado.")
     return redirect('Login')  # Redirige al login
 
-@validar_sesion
-def Productos(request):
-    return render(request, 'Productos.html', {})
-
-def Inicio(request):
-    return render(request, 'Inicio.html', {})
-
-def Nosotros(request):
-    return render(request, 'Nosotros.html', {})
-
-@validar_sesion
-def Contacto(request):
-    return render(request, 'contacto.html', {})
-
 def Register(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -86,3 +73,14 @@ def Register(request):
         return redirect('Login')  # Cambia esta URL según sea necesario
     
     return render(request, 'Register.html')
+
+@validar_sesion
+def Productos(request):
+    perfumes = Perfumes.objects.all()
+    return render(request, 'Productos.html', {'perfumes' : perfumes})
+
+def Inicio(request):
+    return render(request, 'Inicio.html', {})
+
+def Nosotros(request):
+    return render(request, 'Nosotros.html', {})

@@ -7,55 +7,34 @@
 <body class="bg-gray-100">
     <div class="container mx-auto py-10">
         <h1 class="text-3xl font-bold text-center mb-10">Catálogo de Perfumes</h1>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Card de Perfume -->
-            <div class="relative group">
-                <!-- Imagen y detalles básicos -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
-                    <img src="https://via.placeholder.com/300x400" alt="Perfume" class="w-full h-64 object-cover">
-                    <div class="p-4">
-                        <h2 class="text-lg font-bold">Perfume Floral</h2>
-                        <p class="text-gray-600">$50.00</p>
+        {% for perfume in perfumes %}
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Card de Perfume -->
+                <div class="relative group">
+                    <!-- Imagen y detalles básicos -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
+                        <img src="{{ perfume.imagen }}" alt="Perfume" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+                            <p class="text-gray-600">{{ perfume.precio }}</p>
+                        </div>
                     </div>
-                </div>
-                <!-- Información extra -->
-                <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    <h2 class="text-lg font-bold">Perfume Floral</h2>
-                    <p class="text-gray-600 mb-2">Precio: $50.00</p>
-                    <p class="text-sm text-gray-500">Un aroma fresco y floral perfecto para cualquier ocasión.</p>
-                    <p class="text-sm text-gray-500 mt-2"><strong>Notas:</strong> Rosa, jazmín, vainilla, almizcle.</p>
+                    <!-- Información extra -->
+                    <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+                        <p class="text-gray-600 mb-2">{{ perfume.precio }}</p>
+                        <p class="text-sm text-gray-500">{{ perfume.descripcion }}</p>
+                        <p class="text-sm text-gray-500 mt-2">{{ perfume.notas }}</p>
 
-                    <!-- Cantidad e índice de producto -->
-                    <div class="mt-4 flex items-center space-x-4">
-                        <input type="number" min="1" value="1" class="w-16 p-2 border border-gray-300 rounded-md">
-                        <button class="bg-blue-500 text-white p-2 rounded-md">Agregar al Carrito</button>
+                        <!-- Cantidad e índice de producto -->
+                        <div class="mt-4 flex items-center space-x-4">
+                            <input type="number" min="1" value="1" class="w-16 p-2 border border-gray-300 rounded-md">
+                            <button class="bg-blue-500 text-white p-2 rounded-md">Agregar al Carrito</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Otra Card de Perfume (ejemplo) -->
-            <div class="relative group">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
-                    <img src="https://via.placeholder.com/300x400" alt="Perfume" class="w-full h-64 object-cover">
-                    <div class="p-4">
-                        <h2 class="text-lg font-bold">Perfume Citrus</h2>
-                        <p class="text-gray-600">$40.00</p>
-                    </div>
-                </div>
-                <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    <h2 class="text-lg font-bold">Perfume Citrus</h2>
-                    <p class="text-gray-600 mb-2">Precio: $40.00</p>
-                    <p class="text-sm text-gray-500">Un aroma refrescante y cítrico, ideal para el día a día.</p>
-                    <p class="text-sm text-gray-500 mt-2"><strong>Notas:</strong> Naranja, bergamota, limón.</p>
-
-                    <!-- Cantidad e índice de producto -->
-                    <div class="mt-4 flex items-center space-x-4">
-                        <input type="number" min="1" value="1" class="w-16 p-2 border border-gray-300 rounded-md">
-                        <button class="bg-blue-500 text-white p-2 rounded-md">Agregar al Carrito</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </body>
 </html>

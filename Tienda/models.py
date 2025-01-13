@@ -1,9 +1,8 @@
 from django.db import models
 from django.conf import settings
-
-from django.db import models
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.hashers import make_password
+from django.contrib import admin
 
 class CompradorManager(BaseUserManager):
     def create_user(self, usuario, contraseña, gmail, link_foto=None):
@@ -59,5 +58,3 @@ class Perfumes(models.Model):
 
     def __str__(self):
         return self.nombre
-
-
