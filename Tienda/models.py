@@ -49,12 +49,14 @@ class Perfumes(models.Model):
     categoria = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.URLField(blank=True, null=True)
-    id_vendedor = models.ForeignKey(
+    id_admin = models.ForeignKey(
         settings.AUTH_USER_MODEL,  # Relación con el modelo de usuarios
         on_delete=models.CASCADE,
-        related_name="productos"
+        related_name="productos",
+        default=1
     )
     cantidad = models.PositiveIntegerField()
+    disponible = models.BooleanField(default="True")
 
     def __str__(self):
         return self.nombre

@@ -7,9 +7,8 @@
 <body class="bg-gray-100">
     <div class="container mx-auto py-10">
         <h1 class="text-3xl font-bold text-center mb-10">Catálogo de Perfumes</h1>
-        {% for perfume in perfumes %}
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Card de Perfume -->
+                {% for perfume in perfumes %}
                 <div class="relative group">
                     <!-- Imagen y detalles básicos -->
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
@@ -33,8 +32,8 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-        {% endfor %}
     </div>
 </body>
 </html>

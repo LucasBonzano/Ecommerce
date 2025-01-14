@@ -1,0 +1,57 @@
+{% extends "Baseadmin.html" %}
+{% block Estructura %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Productos</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-100">
+        <div class="container mx-auto p-6">
+            <h1 class="text-2xl font-bold mb-4">Listado de Productos</h1>
+            <a href="#" 
+               class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Agregar Producto</a>
+            <table class="table-auto w-full mt-4 bg-white shadow rounded-lg">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2">ID</th>
+                        <th class="px-4 py-2">Nombre</th>
+                        <th class="px-4 py-2">Precio</th>
+                        <th class="px-4 py-2">Estado</th>
+                        <th class="px-4 py-2">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td class="border px-4 py-2">{{ producto.id_producto }}</td>
+                        <td class="border px-4 py-2">{{ producto.nombre }}</td>
+                        <td class="border px-4 py-2">{{ producto.precio }}</td>
+                        <td class="border px-4 py-2">
+                            {% if producto.disponible %}
+                                Activo
+                            {% else %}
+                                Pausado
+                            {% endif %}
+                        </td>
+                        <td class="border px-4 py-2">{{ producto.cantidad }}</td>
+                        <td class="border px-4 py-2">
+                            <a href="{% url 'editar_producto' producto.id_producto %}" 
+                               class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Editar</a>
+                            <a href="{% url 'eliminar_producto' producto.id_producto %}" 
+                               class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Eliminar</a>
+                            <a href="{% url 'pausar_producto' producto.id_producto %}" 
+                               class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600">
+                                {% if producto.disponible %}Pausar{% else %}Activar{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+{% endblock Estructura %}

@@ -1,0 +1,47 @@
+{% extends "Baseadmin.html" %}
+{% block Estructura %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold text-gray-700 text-center mb-6">Panel de Administración</h2>
+        <form action="{% url 'LoginAdmin' %}" method="POST">
+            {% csrf_token %}
+            
+            <!-- Correo electrónico -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-600">Ingrese su usuario</label>
+                <input
+                    type="name"
+                    id="name"
+                    name="name"
+                    required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Nombre"
+                />
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-600">Contraseña</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="********"
+                />
+            </div>
+
+            <!-- Botón de inicio de sesión -->
+            <div class="mb-4">
+                <button
+                    type="submit"
+                    class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    Iniciar Sesión
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock Estructura %}

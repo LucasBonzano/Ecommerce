@@ -76,7 +76,7 @@ def Register(request):
 
 @validar_sesion
 def Productos(request):
-    perfumes = Perfumes.objects.all()
+    perfumes = Perfumes.objects.filter(disponible = True)
     return render(request, 'Productos.html', {'perfumes' : perfumes})
 
 def Inicio(request):
