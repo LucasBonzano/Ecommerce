@@ -10,10 +10,15 @@ def validar_sesion(view_func):
     return wrapper
 
 def validar_sesion_Admin(view_func):
-    @login_required
     def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_superuser:  # Verifica si es superusuario
+        # Verifica si hay una sesión activa
+        if not request.user.is_authenticated:
+            return redirect('LoginAdmin')  # Redirige a la página de login de administradores
+
+        # Verifica si el usuario es superusuario (administrador)
+        if request.user.is_superuser:
             return view_func(request, *args, **kwargs)
         else:
-            raise PermissionDenied  # Lanza un error si no tiene permiso
+            # Opcional: Redirigir o lanzar error
+            raise PermissionDenied  # También podrías usar redirect('otra_vista') si prefieres
     return _wrapped_view

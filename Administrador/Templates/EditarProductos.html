@@ -1,0 +1,93 @@
+{% extends "Baseadmin.html" %}
+{% block Estructura %}
+<div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h1 class="text-2xl font-bold mb-4">Editar Producto</h1>
+
+    <!-- Contenedor de dos columnas -->
+    <div class="flex flex-wrap md:flex-nowrap space-y-4 md:space-y-0 md:space-x-8">
+        <!-- Previsualización -->
+        <div class="w-full md:w-1/2">
+            <h2 class="text-xl font-bold mb-4">Previsualización</h2>
+            <div class="relative group">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
+                    <img src="{{ perfume.imagen }}" alt="{{ perfume.nombre }}" class="w-full h-64 object-cover">
+                    <div class="p-4">
+                        <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+                        <p class="text-gray-600">{{ perfume.precio }}</p>
+                    </div>
+                </div>
+                <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+                    <p class="text-gray-600 mb-2">{{ perfume.precio }}</p>
+                    <p class="text-sm text-gray-500">{{ perfume.descripcion }}</p>
+                    <p class="text-sm text-gray-500 mt-2">{{ perfume.notas }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="w-full md:w-1/2">
+            <h2 class="text-xl font-bold mb-4">Formulario de edición</h2>
+            <form action="{% url 'editar_producto' perfume.id_producto %}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+
+                <!-- Nombre -->
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" value="{{ perfume.nombre }}" class="w-full mt-1 p-2 border rounded-md">
+                </div>
+
+                <!-- Descripción -->
+                <div>
+                    <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" class="w-full mt-1 p-2 border rounded-md">{{ perfume.descripcion }}</textarea>
+                </div>
+
+                <!-- Notas -->
+                <div>
+                    <label for="notas" class="block text-sm font-medium text-gray-700">Notas</label>
+                    <input type="text" id="notas" name="notas" value="{{ perfume.notas }}" class="w-full mt-1 p-2 border rounded-md">
+                </div>
+
+                <!-- Categoría -->
+                <div>
+                    <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+                    <select id="categoria" name="categoria" class="w-full mt-1 p-2 border rounded-md">
+                        <option value="Femenino" {% if perfume.categoria == "Femenino" %}selected{% endif %}>Femenino</option>
+                        <option value="Masculino" {% if perfume.categoria == "Masculino" %}selected{% endif %}>Masculino</option>
+                        <option value="Unisex" {% if perfume.categoria == "Unisex" %}selected{% endif %}>Unisex</option>
+                    </select>
+                </div>
+
+                <!-- Precio -->
+                <div>
+                    <label for="precio" class="block text-sm font-medium text-gray-700">Precio</label>
+                    <input type="number" step="0.01" id="precio" name="precio" value="{{ perfume.precio }}" class="w-full mt-1 p-2 border rounded-md">
+                </div>
+
+                <!-- Cantidad -->
+                <div>
+                    <label for="cantidad" class="block text-sm font-medium text-gray-700">Cantidad</label>
+                    <input type="number" id="cantidad" name="cantidad" value="{{ perfume.cantidad }}" class="w-full mt-1 p-2 border rounded-md">
+                </div>
+
+                <!-- Disponible -->
+                <div>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="disponible" {% if perfume.disponible %}checked{% endif %} class="form-checkbox">
+                        <span class="ml-2 text-sm text-gray-700">Disponible</span>
+                    </label>
+                </div>
+
+                <!-- Imagen -->
+                <div>
+                    <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen</label>
+                    <input type="text" id="imagen" name="imagen" class="w-full mt-1 p-2 border rounded-md" value="{{ perfume.imagen }}">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Actualizar Producto</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock Estructura %}

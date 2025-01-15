@@ -68,15 +68,28 @@ def agregar_perfume(request):
 
 @validar_sesion_Admin
 def editar_producto(request, producto_id):
-    producto = get_object_or_404(Perfumes, id_producto=producto_id)
+    perfume = get_object_or_404(Perfumes, id_producto=producto_id)
+
     if request.method == 'POST':
-        producto.nombre = request.POST['nombre']
-        producto.descripcion = request.POST.get('descripcion', '')
-        producto.precio = request.POST['precio']
-        producto.save()
-        messages.success(request, "Producto editado exitosamente.")
-        return redirect('ProductosAdmin')
-    return render(request, 'editar_producto.html', {'producto': producto})
+        # Capturar los datos enviados desde el formulario
+        perfume.nombre = request.POST.get('nombre')
+        perfume.descripcion = request.POST.get('descripcion')
+        perfume.notas = request.POST.get('notas')
+        perfume.categoria = request.POST.get('categoria')
+        perfume.precio = request.POST.get('precio')
+        perfume.cantidad = request.POST.get('cantidad')
+        perfume.disponible = 'disponible' in request.POST  # Checkbox devuelve True si está marcado
+        perfume.imagen = request.POST.get['imagen']
+        
+        try:
+            # Guardar los cambios
+            perfume.save()
+            messages.success(request, "El perfume se ha actualizado correctamente.")
+            return redirect('ProductosAdmin')  # Cambia la redirección según sea necesario
+        except Exception as e:
+            messages.error(request, f"Error al actualizar el perfume: {str(e)}")
+    
+    return render(request, 'EditarProductos.html', {'perfume': perfume})
 
 @validar_sesion_Admin
 def eliminar_producto(request, producto_id):
