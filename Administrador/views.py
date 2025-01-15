@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render
-from Ecommerce.utils import validar_sesion
+from Ecommerce.utils import validar_sesion_Admin
 from django.contrib.auth import authenticate, login
 from Tienda.models import Perfumes
+from .Form import PerfumeForm
 
 
 
@@ -21,22 +22,53 @@ def LoginAdmin(request):
             messages.error(request, "Credenciales inválidas o no tienes permisos de administrador.")
     return render(request, 'Login.html')
 
+@validar_sesion_Admin
 def ProductosAdmin(request):
     productos = Perfumes.objects.all()
     return  render(request, 'ProductosAdmin.html',  {'productos': productos})
 
-def agregar_producto(request):
+@validar_sesion_Admin
+def agregar_perfume(request):
     if request.method == 'POST':
-        nombre = request.POST['nombre']
-        descripcion = request.POST.get('descripcion', '')
-        precio = request.POST['precio']
-        Perfumes.objects.create(nombre=nombre, descripcion=descripcion, precio=precio, disponible=True)
-        messages.success(request, "Producto agregado exitosamente.")
-        return redirect('ProductosAdmin')
-    return render(request, 'agregar_producto.html')
+        # Capturar los datos enviados desde el formulario
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion')
+        notas = request.POST.get('notas')
+        categoria = request.POST.get('categoria')
+        precio = request.POST.get('precio')
+        cantidad = request.POST.get('cantidad')
+        disponible = 'disponible' in request.POST  # Checkbox devuelve True si está marcado
+        imagen = request.POST.get('imagen')
+        
+        # Validar datos si es necesario (opcional)
+        if not nombre or not descripcion or not categoria or not precio or not cantidad:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return redirect('cargar_perfume')
+        
+        try:
+            # Crear un nuevo objeto Perfume
+            perfume = Perfumes(
+                nombre=nombre,
+                descripcion=descripcion,
+                notas=notas,
+                categoria=categoria,
+                precio=precio,
+                cantidad=cantidad,
+                disponible=disponible,
+                imagen=imagen
+            )
+            perfume.save()  # Guardar en la base de datos
+            messages.success(request, "El perfume ha sido cargado exitosamente.")
+            return redirect('ProductosAdmin')  # Redirigir después de guardar
+        except Exception as e:
+            messages.error(request, f"Hubo un error al cargar el perfume: {str(e)}")
+            return redirect('agregar_producto')
 
+    return render(request, 'AgregarProducto.html')
+
+@validar_sesion_Admin
 def editar_producto(request, producto_id):
-    producto = get_object_or_404(Perfumes, id=producto_id)
+    producto = get_object_or_404(Perfumes, id_producto=producto_id)
     if request.method == 'POST':
         producto.nombre = request.POST['nombre']
         producto.descripcion = request.POST.get('descripcion', '')
@@ -46,12 +78,14 @@ def editar_producto(request, producto_id):
         return redirect('ProductosAdmin')
     return render(request, 'editar_producto.html', {'producto': producto})
 
+@validar_sesion_Admin
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Perfumes, id_producto=producto_id)
     producto.delete()
     messages.success(request, "Producto eliminado exitosamente.")
     return redirect('ProductosAdmin')
 
+@validar_sesion_Admin
 def pausar_producto(request, producto_id):
     producto = get_object_or_404(Perfumes, id_producto=producto_id)
     producto.disponible = not producto.disponible
@@ -60,6 +94,7 @@ def pausar_producto(request, producto_id):
     messages.success(request, f"Producto {estado} exitosamente.")
     return redirect('ProductosAdmin')
 
+@validar_sesion_Admin
 def EstadisticasAdmin(request):
     return  render(request, 'EstadisticasAdmin.html')
 

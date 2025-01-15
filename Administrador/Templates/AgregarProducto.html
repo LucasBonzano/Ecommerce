@@ -1,0 +1,132 @@
+{% extends "Baseadmin.html" %}
+{% block Estructura %}
+<div class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-6">Agregar Nuevo Perfume</h1>
+        <div class="flex items-center justify-center min-h-screen bg-gray-100">
+            <div class="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">Cargar Perfume</h2>
+                <form action=" {% url 'agregar_producto' %}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- Nombre -->
+                    <div>
+                        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Perfume</label>
+                        <input 
+                            type="text" 
+                            id="nombre" 
+                            name="nombre" 
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Nombre del perfume"
+                        >
+                    </div>
+                    
+                    <!-- Descripción -->
+                    <div>
+                        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                        <textarea 
+                            id="descripcion" 
+                            name="descripcion" 
+                            rows="3"
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Descripción breve del perfume"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Notas -->
+                    <div>
+                        <label for="notas" class="block text-sm font-medium text-gray-700">Notas del Perfume</label>
+                        <input 
+                            type="text" 
+                            id="notas" 
+                            name="notas" 
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Notas del perfume"
+                        >
+                    </div>
+                    
+                    <!-- Categoría -->
+                    <div>
+                        <label for="categoria" class="block text-sm font-medium text-gray-700">Categoría</label>
+                        <select 
+                            id="categoria" 
+                            name="categoria" 
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Selecciona una categoría</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Precio -->
+                    <div>
+                        <label for="precio" class="block text-sm font-medium text-gray-700">Precio</label>
+                        <input 
+                            type="number" 
+                            id="precio" 
+                            name="precio" 
+                            required
+                            step="0.01"
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Precio en USD"
+                        >
+                    </div>
+                    
+                    <!-- Imagen -->
+                    <div>
+                        <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen</label>
+                        <input 
+                            type="text" 
+                            id="imagen" 
+                            name="imagen"
+                            accept="image/*"
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        >
+                    </div>
+                    
+                    <!-- Cantidad -->
+                    <div>
+                        <label for="cantidad" class="block text-sm font-medium text-gray-700">Cantidad Disponible</label>
+                        <input 
+                            type="number" 
+                            id="cantidad" 
+                            name="cantidad" 
+                            required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Cantidad en stock"
+                        >
+                    </div>
+                    
+                    <!-- Disponibilidad -->
+                    <div class="flex items-center">
+                        <input 
+                            type="checkbox" 
+                            id="disponible" 
+                            name="disponible"
+                            class="h-5 w-5 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+                        >
+                        <label for="disponible" class="ml-2 text-sm font-medium text-gray-700">¿Está disponible?</label>
+                    </div>
+                    
+                    <!-- Botón de Enviar -->
+                    <div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                            Cargar Perfume
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>        
+    </div>
+</div>
+{% endblock Estructura %}
