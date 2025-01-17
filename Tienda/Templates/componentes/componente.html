@@ -27,8 +27,10 @@
 
                         <!-- Cantidad e índice de producto -->
                         <div class="mt-4 flex items-center space-x-4">
-                            <input type="number" min="1" value="1" class="w-16 p-2 border border-gray-300 rounded-md">
-                            <button class="bg-blue-500 text-white p-2 rounded-md">Agregar al Carrito</button>
+                            <form action="{% url 'agregar_al_carrito' perfume.id_producto %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Agregar al Carrito</button>
+                            </form>                            
                         </div>
                     </div>
                 </div>

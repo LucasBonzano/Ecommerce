@@ -25,14 +25,14 @@
             <!-- Iconos a la derecha -->
             <div class="ml-auto flex items-center space-x-4">
                 <!-- Icono de Carrito -->
-                <a href="#" class="block p-3 rounded hover:bg-gray-600 text-white">
+                <a href=" {% url 'ver_carrito' %}" class="block p-3 rounded hover:bg-gray-600 text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6m1.5-6L5.4 7m13.6 6l1.5 6m-1.5-6H7m10 0a2 2 0 11-4 0 2 2 0 014 0zm-7 0a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                 </a>
 
                 <!-- Modal de Sesión -->
-                {% if request.session.user_id %}
+                {% if request.user.is_authenticated %}
                 <!-- Ícono con Modal para cerrar sesión -->
                 <div class="relative">
                     <button id="userMenuButton" class="block p-3 rounded hover:bg-gray-600 text-white focus:outline-none">
@@ -43,7 +43,7 @@
 
                     <!-- Modal -->
                     <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 text-gray-800">
-                        <p class="px-4 py-2 border-b">Hola, {{ request.session.user_email }}</p>
+                        <p class="px-4 py-2 border-b">Hola, {{ request.user }}</p>
                         <a href="{% url 'Logout' %}" class="block px-4 py-2 hover:bg-gray-100">Cerrar Sesión</a>
                     </div>
                 </div>
@@ -55,6 +55,7 @@
                     </svg>
                 </a>
                 {% endif %}
+
             </div>
         </div>
     </nav>

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Tienda',
     'Administrador',
+    'Carrito',
     'argon2'
 ]
 
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'Ecommerce.urls'
 
@@ -122,20 +124,14 @@ STATIC_URL = 'static/'
 
 # Carpeta donde se ubican los archivos estáticos del proyecto
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    "Tienda\static"
+    BASE_DIR / 
+    "Tienda\\static"
 ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Define el tiempo de inactividad máximo en segundos
-SESSION_COOKIE_AGE = 300  # 5 minutos
-
-# Cierra la sesión al cerrar el navegador
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Renueva la sesión solo si se detecta actividad
 SESSION_SAVE_EVERY_REQUEST = True
@@ -144,3 +140,7 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',  # Algoritmo Argon2
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # PBKDF2 con SHA-256
 ]
+
+AUTH_USER_MODEL = 'Tienda.Comprador'
+
+SESSION_COOKIE_AGE = 600  # 10 minutos

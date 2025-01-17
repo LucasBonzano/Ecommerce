@@ -1,26 +1,43 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from Ecommerce.utils import validar_sesion_Admin
-from django.contrib.auth import authenticate, login
+from django.utils.timezone import now
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import check_password
 from Tienda.models import Perfumes
 from .Form import PerfumeForm
-
+from Tienda.models import Comprador
 
 
 def LoginAdmin(request):
     if request.method == "POST":
-        name = request.POST['name']
-        password = request.POST['password']
-        user = authenticate(request, username=name, password=password)
-        if user is not None and user.is_staff:
-            login(request, user)
-            messages.success(request, "¡Bienvenido al panel de administración!")
-            return redirect('ProductosAdmin')  # Redirige al panel de control
+        name = request.POST.get('name')
+        password = request.POST.get('password')
+
+        try:
+            user = Comprador.objects.get(usuario=name)
+        except Comprador.DoesNotExist:
+            return render(request, 'Login.html')
+        
+        if check_password(password, user.password):
+            if user is not None and user.is_staff:
+                login(request, user)
+                request.session['last_login'] = now().isoformat()
+                return redirect('ProductosAdmin')
+            else:
+                return HttpResponse("Credenciales inválidas o no tienes permisos de administrador.")    
         else:
-            messages.error(request, "Credenciales inválidas o no tienes permisos de administrador.")
+            return render(request, 'Login.html')
+
     return render(request, 'Login.html')
+
+@validar_sesion_Admin
+def logout_admin(request):
+    logout(request)
+    return redirect('LoginAdmin')
+
 
 @validar_sesion_Admin
 def ProductosAdmin(request):
@@ -79,7 +96,7 @@ def editar_producto(request, producto_id):
         perfume.precio = request.POST.get('precio')
         perfume.cantidad = request.POST.get('cantidad')
         perfume.disponible = 'disponible' in request.POST  # Checkbox devuelve True si está marcado
-        perfume.imagen = request.POST.get['imagen']
+        perfume.imagen = request.POST.get('imagen')
         
         try:
             # Guardar los cambios
@@ -107,7 +124,5 @@ def pausar_producto(request, producto_id):
     messages.success(request, f"Producto {estado} exitosamente.")
     return redirect('ProductosAdmin')
 
-@validar_sesion_Admin
-def EstadisticasAdmin(request):
-    return  render(request, 'EstadisticasAdmin.html')
+
 

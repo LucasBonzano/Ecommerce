@@ -7,43 +7,33 @@ from django.utils.timezone import now
 from .models import Comprador, Perfumes
 from django.shortcuts import render
 from Ecommerce.utils import validar_sesion
-
-
+from Carrito.views import sincronizar_carrito_post_login
+from django.contrib.auth import authenticate, login
 
 def Iniciar_Sesion(request):
     if request.method == "POST":
-        gmail = request.POST['gmail']
-        password = request.POST['password']
-        
+        gmail = request.POST.get('gmail')
+        password = request.POST.get('password')
+
         try:
-            user = Comprador.objects.get(gmail=gmail)  # Busca al usuario por Gmail
+            user = Comprador.objects.get(gmail=gmail)
         except Comprador.DoesNotExist:
-            messages.error(request, "El Gmail ingresado no está registrado.")
             return render(request, 'Iniciar_sesion.html')
         
-        # Comparar la contraseña ingresada con la almacenada
-        if check_password(password, user.contraseña):
-            # Iniciar sesión usando la sesión de Django
-            request.session['user_id'] = user.id
-            request.session['user_email'] = user.gmail
-            request.session['last_login'] = now().isoformat()  # Guarda la fecha/hora del login
-            messages.success(request, f"Bienvenido, {user.usuario}!")
-            return redirect('Productos')  # Redirige a la página deseada
+        if check_password(password, user.password):
+            login(request, user)
+            request.session['last_login'] = now().isoformat()
+            return redirect('Productos')
         else:
-            messages.error(request, "Contraseña incorrecta.")
             return render(request, 'Iniciar_sesion.html')
+
     return render(request, 'Iniciar_sesion.html')
 
+
 @validar_sesion
-def Cerrar_Sesion(request):
-    if 'user_id' in request.session:
-        del request.session['user_id']
-        del request.session['user_email']
-        del request.session['last_login']
-        messages.success(request, "Sesión cerrada correctamente.")
-    else:
-        messages.warning(request, "No estás logueado.")
-    return redirect('Login')  # Redirige al login
+def logout_view(request):
+    logout(request)
+    return redirect('Login')
 
 def Register(request):
     if request.method == "POST":
@@ -75,6 +65,7 @@ def Register(request):
     return render(request, 'Register.html')
 
 @validar_sesion
+
 def Productos(request):
     perfumes = Perfumes.objects.filter(disponible = True)
     return render(request, 'Productos.html', {'perfumes' : perfumes})
@@ -84,3 +75,4 @@ def Inicio(request):
 
 def Nosotros(request):
     return render(request, 'Nosotros.html', {})
+

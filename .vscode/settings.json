@@ -3,7 +3,7 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "name": "Ecommerce",
+            "name": "ecommerce",
             "database": "${workspaceFolder:Ecommerce}/db.sqlite3"
         }
     ]
