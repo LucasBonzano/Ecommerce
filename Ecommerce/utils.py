@@ -3,6 +3,14 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from functools import wraps
+import mercadopago
+from django.conf import settings
+
+def get_mercado_pago_client():
+    sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN)
+    return sdk
+
+
 
 def validar_sesion(view_func):
     @wraps(view_func)

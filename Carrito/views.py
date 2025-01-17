@@ -1,8 +1,10 @@
 
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.signals import user_logged_in
+from django.dispatch import receiver
+from Carrito.models import Carrito, CarritoItem
 from Tienda.models import Perfumes as Producto  # Ajusta según tu modelo
-from .models import Carrito, CarritoItem
 
 def inicializar_carrito(request):
     if request.user.is_authenticated:
@@ -78,25 +80,44 @@ def ver_carrito(request):
 
 def eliminar_del_carrito(request, producto_id):
     carrito = request.session.get('carrito', {})
+    
+    # Verifica si el producto está en el carrito de la sesión
     if str(producto_id) in carrito:
         del carrito[str(producto_id)]
         request.session['carrito'] = carrito
+        
+        # Si el usuario está autenticado, elimina también de la base de datos
+        if request.user.is_authenticated:
+            try:
+                carrito_bd = Carrito.objects.get(usuario=request.user)
+                carrito_item = CarritoItem.objects.get(carrito=carrito_bd, producto__id_producto=producto_id)
+                carrito_item.delete()
+            except (Carrito.DoesNotExist, CarritoItem.DoesNotExist):
+                # Ignorar si el carrito o el ítem no existe en la base de datos
+                pass
+
     return redirect('ver_carrito')
 
 
 def vaciar_carrito(request):
+    # Limpia el carrito en la sesión
     request.session['carrito'] = {}
+    
+    # Si el usuario está autenticado, elimina todos los ítems del carrito en la base de datos
+    if request.user.is_authenticated:
+        try:
+            carrito_bd = Carrito.objects.get(usuario=request.user)
+            # Elimina todos los ítems asociados al carrito
+            carrito_bd.items.all().delete()
+        except Carrito.DoesNotExist:
+            # Ignorar si el carrito no existe en la base de datos
+            pass
+
     return redirect('ver_carrito')
 
-from django.contrib.auth.signals import user_logged_in
 
-from django.contrib.auth.signals import user_logged_in
-from django.dispatch import receiver
-from Carrito.models import Carrito, CarritoItem
-from Tienda.models import Perfumes as Producto  # Ajusta según tu modelo
 
 def sincronizar_carrito_generico(request, user):
-    """Sincroniza el carrito de la sesión con la base de datos para el usuario dado."""
     if 'carrito' in request.session:
         # Obtén o crea el carrito del usuario
         carrito, _ = Carrito.objects.get_or_create(usuario=user)
