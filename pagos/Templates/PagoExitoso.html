@@ -1,0 +1,9 @@
+{% extends "C:\Users\lucas\Desktop\Programacion\Ecommerce\Tienda\Templates\Base.html" %}
+{% block Estructura %}
+    <div>
+        <h1>¡Gracias por tu compra!</h1>
+        <p>El pago se ha realizado con éxito.</p>
+        <p><strong>ID de la compra:</strong> {{ id_compra }}</p>
+        <a href=" {% url 'Home' %}">Volver a la tienda</a>
+    </div>
+{% endblock Estructura %}

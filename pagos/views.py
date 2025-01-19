@@ -1,7 +1,9 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, HttpResponse, redirect
 from django.http import JsonResponse
 from Carrito.models import Carrito, CarritoItem
 from Ecommerce.utils import get_mercado_pago_client
+from .models import Compra, CompraItem
+from Ecommerce.utils import validar_sesion
 
 def procesar_pago(request):
     if request.method == 'POST':
@@ -27,9 +29,9 @@ def procesar_pago(request):
                 "email": request.user.gmail  # Email del comprador (si está disponible)
             },
             "back_urls": {
-                "success": "http://tusitio.com/pago_exitoso",  # URL de éxito
-                "failure": "http://tusitio.com/pago_fallido",  # URL de fallo
-                "pending": "http://tusitio.com/pago_pendiente"  # URL de pendiente
+                "success": "http://localhost:8000/Pago/PagoExitoso/",
+                "failure": "http://localhost:8000/Pago/PagoFallido/",  # URL de fallo
+                "pending": "http://localhost:8000/Pago/PagoPendiente/"  # URL de pendiente
             },
             "auto_return": "approved"
         }
@@ -39,11 +41,71 @@ def procesar_pago(request):
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
 
-        # Limpiar el carrito (opcional: hacerlo después de confirmar el pago)
-        carrito.items.all().delete()
-
         # Devolver el punto de inicio para el pago
         if 'init_point' in preference:
-            return JsonResponse({'init_point': preference['init_point']})
+            return redirect(preference['init_point'])
         else:
-            return JsonResponse({'error': 'No se pudo generar la preferencia de pago.', 'detalle': preference_response}, status=400)
+            return redirect('PagoFallido')
+
+@validar_sesion
+def PagoExitoso(request):
+    """
+    Vista que procesa el pago exitoso y registra la compra.
+    """
+    try:
+        # Obtener datos de la redirección
+        id_compra = request.GET.get("payment_id")  # ID del pago en Mercado Pago
+        estado_pago = request.GET.get("status")  # Estado del pago
+        usuario = request.user
+
+        if not id_compra or estado_pago != "approved":
+            return HttpResponse("Error al procesar el pago.", status=400)
+
+        # Registrar la compra
+        registrar_compra(usuario, id_compra, estado_pago)
+
+        # Mostrar una página de confirmación
+        return render(request, "PagoExitoso.html", {"id_compra": id_compra})
+
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)
+
+def registrar_compra(usuario, id_compra, estado_pago):
+    """
+    Función para registrar la compra en la base de datos.
+    """
+    # Verificar si la compra ya existe
+    compra, creada = Compra.objects.get_or_create(
+        usuario=usuario,
+        id_compra=id_compra,
+        defaults={'estado_pago': estado_pago}
+    )
+
+    if not creada:
+        # Si la compra ya existe, solo actualizamos el estado del pago
+        compra.estado_pago = estado_pago
+        compra.save()
+        return compra
+
+    # Si la compra es nueva, registrar los productos del carrito
+    carrito = Carrito.objects.get(usuario=usuario)
+    items_carrito = carrito.items.all()
+
+    for item in items_carrito:
+        CompraItem.objects.create(
+            compra=compra,
+            producto=item.producto,
+            cantidad=item.cantidad,
+            precio_unitario=item.precio_unitario
+        )
+
+    # Limpiar el carrito después de registrar la compra
+    carrito.items.all().delete()
+
+    return compra
+
+def PagoPendiente(request):
+    return render(request, 'PagoPendiente.html')
+
+def PagoFallido(request):
+    return render(request, 'PagoFallido.html')
