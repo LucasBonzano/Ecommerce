@@ -98,7 +98,6 @@ def eliminar_del_carrito(request, producto_id):
 
     return redirect('ver_carrito')
 
-
 def vaciar_carrito(request):
     # Limpia el carrito en la sesión
     request.session['carrito'] = {}
@@ -114,7 +113,6 @@ def vaciar_carrito(request):
             pass
 
     return redirect('ver_carrito')
-
 
 
 def sincronizar_carrito_generico(request, user):

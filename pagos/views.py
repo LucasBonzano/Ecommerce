@@ -1,45 +1,49 @@
-from django.shortcuts import render
-
-# views.py
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+from Carrito.models import Carrito, CarritoItem
 from Ecommerce.utils import get_mercado_pago_client
 
-def create_preference(request):
-    if request.method == "POST":
-        sdk = get_mercado_pago_client()
-        # Define los datos del pago
+def procesar_pago(request):
+    if request.method == 'POST':
+        # Obtener el carrito del usuario actual
+        carrito = get_object_or_404(Carrito, usuario=request.user)  # Ajusta si usas autenticación personalizada
+        
+        # Verificar si el carrito tiene ítems
+        items_carrito = carrito.items.all()
+        if not items_carrito.exists():
+            return JsonResponse({'error': 'El carrito está vacío.'}, status=400)
+
+        # Generar los datos de la preferencia
         preference_data = {
             "items": [
                 {
-                    "title": "Producto 1",
-                    "quantity": 1,
-                    "unit_price": 100.0,
-                    "currency_id": "ARS",  # Cambia según tu moneda
+                    "title": item.producto.nombre,          # Nombre del producto
+                    "quantity": item.cantidad,             # Cantidad del producto
+                    "unit_price": float(item.precio_unitario),  # Precio unitario del producto
                 }
+                for item in items_carrito
             ],
             "payer": {
-                "email": "comprador@correo.com",  # Cambia por el correo del usuario
+                "email": request.user.gmail  # Email del comprador (si está disponible)
             },
             "back_urls": {
-                "success": "http://localhost:8000/pago-exitoso/",  # Cambia por tu URL de éxito
-                "failure": "http://localhost:8000/pago-fallido/",  # Cambia por tu URL de fallo
-                "pending": "http://localhost:8000/pago-pendiente/",  # Cambia por tu URL de pendiente
+                "success": "http://tusitio.com/pago_exitoso",  # URL de éxito
+                "failure": "http://tusitio.com/pago_fallido",  # URL de fallo
+                "pending": "http://tusitio.com/pago_pendiente"  # URL de pendiente
             },
-            "auto_return": "approved",
+            "auto_return": "approved"
         }
 
-        # Crea la preferencia
+        # Inicializar el SDK de Mercado Pago
+        sdk = get_mercado_pago_client()
         preference_response = sdk.preference().create(preference_data)
         preference = preference_response["response"]
-        return JsonResponse({
-            "id": preference["id"],
-            "init_point": preference["init_point"],
-        })
 
-    return JsonResponse({"error": "Método no permitido"}, status=405)
+        # Limpiar el carrito (opcional: hacerlo después de confirmar el pago)
+        carrito.items.all().delete()
 
-from django.conf import settings
-
-def pago(request):
-    return render(request, "pago.html", {"public_key": settings.MERCADO_PAGO_PUBLIC_KEY})
+        # Devolver el punto de inicio para el pago
+        if 'init_point' in preference:
+            return JsonResponse({'init_point': preference['init_point']})
+        else:
+            return JsonResponse({'error': 'No se pudo generar la preferencia de pago.', 'detalle': preference_response}, status=400)

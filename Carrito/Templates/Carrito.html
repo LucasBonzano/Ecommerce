@@ -24,15 +24,63 @@
             {% endfor %}
         </ul>
 
-        <div class="mt-6">
+        <div class="mt-6 flex justify-between items-center">
             <p class="text-lg font-bold">Total: ${{ total }}</p>
             <form action="{% url 'vaciar_carrito' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md">Vaciar Carrito</button>
             </form>
         </div>
+        <form id="checkout-form" action="{% url 'create_preference' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="productos" value="{{ carrito|json_script:'productos' }}">
+          <button type="submit" id="checkout-button" class="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-600 flex items-center">
+              <img src="https://www.mercadopago.com/org-img/MP3/logos/mp_logo_64.png" alt="Mercado Pago" class="h-5 w-5 mr-2">
+              Pagar con Mercado Pago
+          </button>
+        </form>
     {% else %}
         <p class="text-gray-500">El carrito está vacío.</p>
     {% endif %}
 </div>
+
 {% include "./componentes/Footer.html" %}
+
+<script>
+    // Función para obtener el valor del token CSRF desde las cookies
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Busca la cookie que comienza con el nombre dado
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  
+    const csrftoken = getCookie('csrftoken');
+  
+    // Agrega el evento al botón
+    document.getElementById("checkout-button").addEventListener("click", function () {
+      fetch("/Pago/create_preference/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken, // Incluye el token CSRF
+        },
+        body: JSON.stringify({}), // Si necesitas enviar datos, agrégalos aquí
+      })
+      .then(response => response.json())
+      .then(data => {
+        window.location.href = data.init_point; // Redirige al checkout de Mercado Pago
+      })
+      .catch(error => console.error("Error al generar la preferencia:", error));
+    });
+    console.log(carrito)
+  </script>

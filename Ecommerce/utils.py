@@ -10,8 +10,6 @@ def get_mercado_pago_client():
     sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN)
     return sdk
 
-
-
 def validar_sesion(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
