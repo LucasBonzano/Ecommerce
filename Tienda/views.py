@@ -1,14 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import login, logout
-from django.contrib.sessions.models import Session
 from django.utils.timezone import now
 from .models import Comprador, Perfumes
 from django.shortcuts import render
 from Ecommerce.utils import validar_sesion
-from Carrito.views import sincronizar_carrito_post_login
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
+from pagos.models import Compra, CompraItem
+
 
 def Iniciar_Sesion(request):
     if request.method == "POST":
@@ -64,7 +64,6 @@ def Register(request):
     
     return render(request, 'Register.html')
 
-@validar_sesion
 
 def Productos(request):
     perfumes = Perfumes.objects.filter(disponible = True)
@@ -75,4 +74,21 @@ def Inicio(request):
 
 def Nosotros(request):
     return render(request, 'Nosotros.html', {})
+
+@validar_sesion
+def listar_compras(request):
+    """
+    Vista para listar todas las compras realizadas por el usuario actual.
+    """
+    compras = Compra.objects.filter(usuario=request.user).order_by('-creado_en')  # Ordenar por fecha más reciente
+    return render(request, 'HistCompras.html', {'compras': compras})
+
+@validar_sesion
+def detalle_compra(request, id_compra):
+    """
+    Vista para mostrar los detalles de una compra específica, incluyendo los productos comprados.
+    """
+    compra = get_object_or_404(Compra, id_compra=id_compra, usuario=request.user)
+    items = compra.items.all()  # Obtener los productos asociados a la compra
+    return render(request, 'DetalleCompra.html', {'compra': compra, 'items': items})
 

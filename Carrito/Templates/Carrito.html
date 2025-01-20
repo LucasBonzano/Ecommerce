@@ -33,7 +33,6 @@
         </div>
         <form id="checkout-form" action="{% url 'create_preference' %}" method="post">
           {% csrf_token %}
-          <input type="hidden" name="productos" value="{{ carrito|json_script:'productos' }}">
           <button type="submit" id="checkout-button" class="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-600 flex items-center">
               <img src="https://www.mercadopago.com/org-img/MP3/logos/mp_logo_64.png" alt="Mercado Pago" class="h-5 w-5 mr-2">
               Pagar con Mercado Pago
