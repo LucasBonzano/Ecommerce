@@ -1,41 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Perfumes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="container mx-auto py-10">
-        <h1 class="text-3xl font-bold text-center mb-10">Catálogo de Perfumes</h1>
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {% for perfume in perfumes %}
-                <div class="relative group">
-                    <!-- Imagen y detalles básicos -->
-                    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
-                        <img src="{{ perfume.imagen }}" alt="Perfume" class="w-full h-64 object-cover">
-                        <div class="p-4">
-                            <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
-                            <p class="text-gray-600">{{ perfume.precio }}</p>
-                        </div>
-                    </div>
-                    <!-- Información extra -->
-                    <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
-                        <p class="text-gray-600 mb-2">{{ perfume.precio }}</p>
-                        <p class="text-sm text-gray-500">{{ perfume.descripcion }}</p>
-                        <p class="text-sm text-gray-500 mt-2">{{ perfume.notas }}</p>
-
-                        <!-- Cantidad e índice de producto -->
-                        <div class="mt-4 flex items-center space-x-4">
-                            <form action="{% url 'agregar_al_carrito' perfume.id_producto %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Agregar al Carrito</button>
-                            </form>                            
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+<div class="relative group">
+    <!-- Imagen y detalles básicos -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
+        <img src="{{ perfume.imagen }}" alt="Perfume" class="w-full h-64 object-cover">
+        <div class="p-4">
+            <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+            <p class="text-gray-600">{{ perfume.precio }}</p>
+        </div>
     </div>
-</body>
-</html>
+
+    <!-- Información extra -->
+    {% if perfume.cantidad > 5 %}
+        <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+            <p class="text-gray-600 mb-2">{{ perfume.precio }}</p>
+            <p class="text-sm text-gray-500">{{ perfume.descripcion }}</p>
+            <p class="text-sm text-gray-500 mt-2">{{ perfume.notas }}</p>
+
+            <!-- Cantidad e índice de producto -->
+            <div class="mt-4 flex items-center space-x-4">
+                <form action="{% url 'agregar_al_carrito' perfume.id_producto %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Agregar al Carrito</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="absolute inset-0 bg-white rounded-lg shadow-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <h2 class="text-lg font-bold">{{ perfume.nombre }}</h2>
+            <p class="text-gray-600 mb-2">{{ perfume.precio }}</p>
+            <p class="text-sm text-gray-500">{{ perfume.descripcion }}</p>
+            <p class="text-sm text-gray-500 mt-2">{{ perfume.notas }}</p>
+            <p class="text-sm text-orange-500 mt-2">Quedan {{ perfume.cantidad }} unidades disponibles</p>
+
+            <!-- Cantidad e índice de producto -->
+            <div class="mt-4 flex items-center space-x-4">
+                <form action="{% url 'agregar_al_carrito' perfume.id_producto %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-md">Pocas unidades</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -8,6 +8,7 @@ from django.shortcuts import render
 from Ecommerce.utils import validar_sesion
 from django.contrib.auth import login
 from pagos.models import Compra, CompraItem
+from django.http import JsonResponse
 
 
 def Iniciar_Sesion(request):
@@ -65,9 +66,20 @@ def Register(request):
     return render(request, 'Register.html')
 
 
-def Productos(request):
-    perfumes = Perfumes.objects.filter(disponible = True)
-    return render(request, 'Productos.html', {'perfumes' : perfumes})
+def Productos(request, categoria = None):
+    categorias_seleccionadas = request.GET.getlist('categoria', [])  # Obtén las categorías seleccionadas
+
+    if categorias_seleccionadas:
+        perfumes = Perfumes.objects.filter(categoria__in=categorias_seleccionadas, disponible=True)
+    else:
+        perfumes = Perfumes.objects.filter(disponible=True)
+
+    categorias = Perfumes.objects.values_list('categoria', flat=True).distinct()
+    return render(request, 'Productos.html', {
+        'categorias': categorias,
+        'perfumes': perfumes,
+        'categorias_seleccionadas': categorias_seleccionadas
+    })
 
 def Inicio(request):
     return render(request, 'Inicio.html', {})
@@ -91,4 +103,5 @@ def detalle_compra(request, id_compra):
     compra = get_object_or_404(Compra, id_compra=id_compra, usuario=request.user)
     items = compra.items.all()  # Obtener los productos asociados a la compra
     return render(request, 'DetalleCompra.html', {'compra': compra, 'items': items})
+
 

@@ -71,9 +71,7 @@ def PagoExitoso(request):
         return HttpResponse(f"Error: {str(e)}", status=500)
 
 def registrar_compra(usuario, id_compra, estado_pago):
-    """
-    Función para registrar la compra en la base de datos.
-    """
+    
     # Verificar si la compra ya existe
     compra, creada = Compra.objects.get_or_create(
         usuario=usuario,
@@ -92,6 +90,7 @@ def registrar_compra(usuario, id_compra, estado_pago):
     items_carrito = carrito.items.all()
 
     for item in items_carrito:
+        # Crear el registro del producto en la compra
         CompraItem.objects.create(
             compra=compra,
             producto=item.producto,
@@ -99,10 +98,20 @@ def registrar_compra(usuario, id_compra, estado_pago):
             precio_unitario=item.precio_unitario
         )
 
+        # Actualizar el stock del producto
+        producto = item.producto
+        if producto.cantidad >= item.cantidad:
+            producto.cantidad -= item.cantidad  # Restar la cantidad comprada
+            producto.save()
+        else:
+            # Si no hay suficiente stock, lanzar una excepción
+            raise ValueError(f"No hay suficiente stock para el producto {producto.nombre}.")
+
     # Limpiar el carrito después de registrar la compra
     carrito.items.all().delete()
 
     return compra
+
 
 def PagoPendiente(request):
     return render(request, 'PagoPendiente.html')

@@ -1,4 +1,38 @@
 {% extends "Base.html" %}
 {% block Estructura %}
-        {% include "./componentes/componente.html" %}
+<div class="bg-gray-100">
+    <div class="container flex mx-auto py-10">
+            <!-- Sidebar -->
+            <div class="w-1/4 bg-white rounded-lg shadow-lg p-4">
+                <h2 class="text-lg font-bold mb-4">Filtrar por Categorías</h2>
+                <form id="filter-form" method="get" action="">
+                    {% for categoria in categorias %}
+                        <div class="mb-2">
+                            <label class="inline-flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="categoria"
+                                    value="{{ categoria }}"
+                                    {% if categoria in categorias_seleccionadas %}checked{% endif %}
+                                    class="form-checkbox text-blue-600"
+                                    onchange="document.getElementById('filter-form').submit();"
+                                >
+                                <span class="ml-2">{{ categoria }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+
+            <!-- Productos -->
+            <div class="w-3/4 ml-4">
+                <h1 class="text-3xl font-bold text-center mb-10">Catálogo de Perfumes</h1>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {% for perfume in perfumes %}
+                        {% include "./componentes/componente.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+</div>
 {% endblock Estructura %}

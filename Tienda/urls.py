@@ -10,5 +10,6 @@ urlpatterns = [
     path('AboutUs/', views.Nosotros, name="AboutUs"),
     path('HistorialCompras/', views.listar_compras, name='HistorialCompras'),
     path('DetalleCompra/<str:id_compra>/', views.detalle_compra, name='DetalleCompra'),
-    path('', views.Inicio, name="Home")
+    path('', views.Inicio, name="Home"),
+    
 ]
