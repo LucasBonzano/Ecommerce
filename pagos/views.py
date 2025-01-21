@@ -5,6 +5,7 @@ from Ecommerce.utils import get_mercado_pago_client
 from .models import Compra, CompraItem
 from Ecommerce.utils import validar_sesion
 
+@validar_sesion
 def procesar_pago(request):
     if request.method == 'POST':
         # Obtener el carrito del usuario actual
@@ -70,6 +71,7 @@ def PagoExitoso(request):
     except Exception as e:
         return HttpResponse(f"Error: {str(e)}", status=500)
 
+@validar_sesion
 def registrar_compra(usuario, id_compra, estado_pago):
     
     # Verificar si la compra ya existe
@@ -112,9 +114,10 @@ def registrar_compra(usuario, id_compra, estado_pago):
 
     return compra
 
-
+@validar_sesion
 def PagoPendiente(request):
     return render(request, 'PagoPendiente.html')
 
+@validar_sesion
 def PagoFallido(request):
     return render(request, 'PagoFallido.html')

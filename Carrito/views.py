@@ -1,10 +1,11 @@
 
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from Carrito.models import Carrito, CarritoItem
 from Tienda.models import Perfumes as Producto  # Ajusta según tu modelo
+from django.contrib import messages
+from Ecommerce.utils import validar_sesion
 
 def inicializar_carrito(request):
     if request.user.is_authenticated:
@@ -14,6 +15,7 @@ def inicializar_carrito(request):
     elif 'carrito' not in request.session:
         request.session['carrito'] = {}
 
+@validar_sesion
 def sincronizar_carrito_con_bd(request):
     """Sincroniza el carrito de la sesión con la base de datos para el usuario autenticado."""
     if not request.user.is_authenticated:
@@ -39,6 +41,7 @@ def sincronizar_carrito_con_bd(request):
         # Limpia el carrito en la sesión para evitar duplicados
         del request.session['carrito']
 
+@validar_sesion
 def cargar_carrito_desde_bd(carrito):
     carrito_session = {}
     for item in carrito.items.all():
@@ -114,7 +117,7 @@ def vaciar_carrito(request):
 
     return redirect('ver_carrito')
 
-
+@validar_sesion
 def sincronizar_carrito_generico(request, user):
     if 'carrito' in request.session:
         # Obtén o crea el carrito del usuario
@@ -138,3 +141,18 @@ def sincronizar_carrito_generico(request, user):
 def sincronizar_carrito_post_login(sender, request, user, **kwargs):
     """Sincroniza automáticamente el carrito después de iniciar sesión."""
     sincronizar_carrito_generico(request, user)
+
+
+def actualizar_carrito(request, producto_id):
+    productos = Producto.objects.get(id_producto=producto_id)
+    if request.method == 'POST':
+        cantidad = int(request.POST.get('cantidad', 1))
+        if cantidad > 0 and (cantidad <= productos.cantidad):
+            carrito = request.session.get('carrito', {})
+            if str(producto_id) in carrito:
+                carrito[str(producto_id)]['cantidad'] = cantidad
+                request.session['carrito'] = carrito
+            sincronizar_carrito_con_bd(request)
+        else:
+            messages.error(request, f"La cantidad solicitada para {productos.nombre} excede el stock disponible de {productos.cantidad} unidades.")
+        return redirect('ver_carrito')
